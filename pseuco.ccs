@@ -1,0 +1,12 @@
+A := read0?.msg0!.A + read1?.msg1!.A
+B := msg0?.(ack0!.B + nack0!.B) + msg1?.(ack1!.B + nack1!.B)
+
+C0 := ack0?.CA0 + nack0?.C0 + ack1?.C0
+CA0 := write1!.ok0!.C1
+C1 := ack1?.CA1 + nack1?.C1 + ack0?.C1
+CA1 := write0!.ok1!.C0
+
+M0 := read0!.M0 + write1?.M1
+M1 := read1!.M1 + write0?.M0
+
+(A | B | C0 | M0) \ {msg0,msg1,ack0,ack1,nack0,nack1,read0,read1,write0,write1}
