@@ -1,0 +1,138 @@
+*******************************************************************************
+* Definition of the specification "Spec"
+agent Spec = ok0.ok1.Spec;
+*******************************************************************************
+
+
+
+*******************************************************************************
+* Definition of Sender
+agent Sender = read0.('msg0.Sender + read1.Sender) + read1.('msg1.Sender + read0.Sender);
+*******************************************************************************
+
+*******************************************************************************
+* Definition of ReceiverX
+agent Receiver0 = msg0.'ack0.Receiver1;
+agent Receiver1 =  msg1.'ack1.Receiver0;
+*******************************************************************************
+
+*******************************************************************************
+* Definition of BadReceiverX
+agent BadReceiver0 = msg0.('ack0.BadReceiver1 + 'nack0.BadReceiver0);
+agent BadReceiver1 = msg1.('ack1.BadReceiver0 + 'nack1.BadReceiver1);
+*******************************************************************************
+
+*******************************************************************************
+* Definition of AckReceiveX/MX
+agent AckReceive0 = ack0.AckReceiveM0 + nack0.AckReceive0 + ack1.AckReceive0;
+agent AckReceiveM0 = 'write1.ok0.AckReceive1;
+agent AckReceive1 = ack1.AckReceiveM1 + nack1.AckReceive1 + ack0.AckReceive1;
+agent AckReceiveM1 = 'write0.ok1.AckReceive0;
+*******************************************************************************
+
+*******************************************************************************
+* Definition of MemoryX
+agent Memory0 = 'read0.Memory0 + write1.Memory1;
+agent Memory1 = 'read1.Memory1 + write0.Memory0;
+*******************************************************************************
+
+
+
+*******************************************************************************
+* InternalActions
+set IntActions = {read0,read1,write0,write1,ack0,ack1,nack0,nack1,msg0,msg1};
+*******************************************************************************
+
+
+
+*******************************************************************************
+* The definition of the safe implementation "ReliableABP"
+agent ReliableABP = (Sender | Receiver0 | AckReceive0 | Memory0)\IntActions;
+*******************************************************************************
+
+*******************************************************************************
+* The definition of the lossy implementation "UnreliableABP"
+agent UnreliableABP = (Sender | BadReceiver0 | AckReceive0 | Memory0)\IntActions;
+*******************************************************************************
+
+
+
+*******************************************************************************
+* The definition of the "Can" temporal operator
+prop Can(a) = <a>T;
+*******************************************************************************
+
+*******************************************************************************
+* The definition of the "Inv" temporal operator
+prop Inv(P) = max(X.(P | [-]X));
+*******************************************************************************
+
+*******************************************************************************
+* The definition of the "Pos" temporal operator
+prop Pos(P) = min(X.(P | <->X));
+*******************************************************************************
+
+*******************************************************************************
+* The definition of the "Safe" temporal operator
+prop Safe(P) = max(X.(P & (<->X | [-]F) ));
+*******************************************************************************
+
+*******************************************************************************
+* The definition of the "Even" temporal operator
+prop Even(P) = min(X.(P | ([-]X & <->T) ));
+*******************************************************************************
+
+*******************************************************************************
+* The definition of the "TauCycle" temporal operator
+prop TauCycle = max(X.(<tau>X));
+*******************************************************************************
+
+*******************************************************************************
+* The definition of the "Livelock" temporal operator
+prop Livelock(P) = Pos(TauCycle);
+*******************************************************************************
+
+*******************************************************************************
+* The definition of the "Fair" temporal operator
+prop Fair = Inv([[ok0]]<ok1>T & [[ok1]]<ok0>T);
+*******************************************************************************
+
+
+
+*******************************************************************************
+* Definition of LoudSender
+agent LoudSender = read0.('msg0.send0.LoudSender + read1.LoudSender) + read1.('msg1.send1.LoudSender + read0.LoudSender);
+*******************************************************************************
+
+*******************************************************************************
+* Definition of LoudReceiverX
+agent LoudReceiver0 = msg0.'ack0.receive0.LoudReceiver1;
+agent LoudReceiver1 =  msg1.receive1.'ack1.LoudReceiver0;
+*******************************************************************************
+
+*******************************************************************************
+* Definition of BadReceiverX
+agent BadReceiver0 = msg0.('ack0.BadReceiver1 + 'nack0.BadReceiver0);
+agent BadReceiver1 = msg1.('ack1.BadReceiver0 + 'nack1.BadReceiver1);
+*******************************************************************************
+
+*******************************************************************************
+* Definition of LoudBadReceiverX
+agent LoudBadReceiver0 = msg0.('ack0.receive0.LoudBadReceiver1 + 'nack0.LoudBadReceiver0);
+agent LoudBadReceiver1 = msg1.('ack1.receive1.LoudBadReceiver0 + 'nack1.LoudBadReceiver1);
+*******************************************************************************
+
+*******************************************************************************
+* The definition of the safe implementation "LoudReliableABP"
+agent LoudReliableABP = (LoudSender | LoudReceiver0 | AckReceive0 | Memory0)\IntActions;
+*******************************************************************************
+
+*******************************************************************************
+* The definition of the lossy implementation "LoudUnreliableABP"
+agent LoudUnreliableABP = (LoudSender | LoudBadReceiver0 | AckReceive0 | Memory0)\IntActions;
+*******************************************************************************
+
+*******************************************************************************
+* The definition of the "NoConsecutiveSameNumber" temporal operator
+prop NoConsecutiveSameNumber = Inv([[ok0]][[ok0]]F & [[ok1]][[ok1]]F);
+*******************************************************************************
