@@ -1,0 +1,53 @@
+input "github/Alternating-bit-protocol/abp.cwb";
+
+*******************************************************************************
+
+deadlocks(ReliableABP);
+deadlocks(UnreliableABP);
+
+*******************************************************************************
+
+game(Spec,ReliableABP);
+
+*******************************************************************************
+
+strongeq(Spec,ReliableABP);
+dfstrong(Spec,ReliableABP);
+dfstrong(ReliableABP,Spec);
+
+strongeq(Spec,UnreliableABP);
+dfstrong(Spec,UnreliableABP);
+
+strongeq(ReliableABP,UnreliableABP);
+dfstrong(ReliableABP,UnreliableABP);
+
+*******************************************************************************
+
+dfweak(Spec,ReliableABP);
+dfweak(Spec,UnreliableABP);
+dfweak(ReliableABP,UnreliableABP);
+
+*******************************************************************************
+
+cp (Spec, (Can(ok0)));
+
+cp (ReliableABP, Can(tau));
+checkprop (ReliableABP, Even(<ok0>T));
+checkprop (ReliableABP, Even(<ok1>T));
+checkprop (ReliableABP, Even([[ok0]]<ok1>T) & Even([[ok1]]<ok0>T));
+checkprop (ReliableABP, Fair);
+checkprop (ReliableABP, NoConsecutiveSameNumber);
+checkprop (ReliableABP, TauCycle);
+
+checkprop (UnreliableABP, Fair);
+checkprop (UnreliableABP, NoConsecutiveSameNumber);
+checkprop (UnreliableABP, TauCycle);
+
+cp (LoudReliableABP, Even(<ok0>T));
+checkprop (LoudReliableABP, Fair);
+checkprop (LoudReliableABP, NoConsecutiveSameNumber);
+checkprop (LoudReliableABP, TauCycle);
+
+checkprop (LoudUnreliableABP, Fair);
+checkprop (LoudUnreliableABP, NoConsecutiveSameNumber);
+checkprop (LoudUnreliableABP, TauCycle);
