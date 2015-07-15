@@ -1,0 +1,70 @@
+%% Creator: Inkscape inkscape 0.48.4, www.inkscape.org
+%% PDF/EPS/PS + LaTeX output extension by Johan Engelen, 2010
+%% Accompanies image file 'ccs.eps' (pdf, eps, ps)
+%%
+%% To include the image in your LaTeX document, write
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics{<filename>.pdf}
+%% To scale the image, write
+%%   \def\svgwidth{<desired width>}
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics[width=<desired width>]{<filename>.pdf}
+%%
+%% Images with a different path to the parent latex file can
+%% be accessed with the `import' package (which may need to be
+%% installed) using
+%%   \usepackage{import}
+%% in the preamble, and then including the image with
+%%   \import{<path to file>}{<filename>.pdf_tex}
+%% Alternatively, one can specify
+%%   \graphicspath{{<path to file>/}}
+%% 
+%% For more information, please see info/svg-inkscape on CTAN:
+%%   http://tug.ctan.org/tex-archive/info/svg-inkscape
+%%
+\begingroup%
+  \makeatletter%
+  \providecommand\color[2][]{%
+    \errmessage{(Inkscape) Color is used for the text in Inkscape, but the package 'color.sty' is not loaded}%
+    \renewcommand\color[2][]{}%
+  }%
+  \providecommand\transparent[1]{%
+    \errmessage{(Inkscape) Transparency is used (non-zero) for the text in Inkscape, but the package 'transparent.sty' is not loaded}%
+    \renewcommand\transparent[1]{}%
+  }%
+  \providecommand\rotatebox[2]{#2}%
+  \ifx\svgwidth\undefined%
+    \setlength{\unitlength}{463bp}%
+    \ifx\svgscale\undefined%
+      \relax%
+    \else%
+      \setlength{\unitlength}{\unitlength * \real{\svgscale}}%
+    \fi%
+  \else%
+    \setlength{\unitlength}{\svgwidth}%
+  \fi%
+  \global\let\svgwidth\undefined%
+  \global\let\svgscale\undefined%
+  \makeatother%
+  \begin{picture}(1,0.9077341)%
+    \put(0,0){\includegraphics[width=\unitlength]{ccs.eps}}%
+    \put(0.34389173,0.69384593){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{Sender}}}%
+    \put(0.64910688,0.50790501){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{Receiver}}}%
+    \put(0.34977399,0.29189116){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{AckReceiver}}}%
+    \put(0.0984332,0.47088135){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{Memory}}}%
+    \put(0.59086377,0.70456508){\color[rgb]{0,0,0}\rotatebox{-33.53829363}{\makebox(0,0)[lb]{\smash{msg0}}}}%
+    \put(0.53821227,0.64234362){\color[rgb]{0,0,0}\rotatebox{-32.48236659}{\makebox(0,0)[lb]{\smash{msg1}}}}%
+    \put(0.1944293,0.59288871){\color[rgb]{0,0,0}\rotatebox{39.38333285}{\makebox(0,0)[lb]{\smash{read0}}}}%
+    \put(0.25572782,0.55347601){\color[rgb]{0,0,0}\rotatebox{44.21417666}{\makebox(0,0)[lb]{\smash{read1}}}}%
+    \put(0.23232283,0.40036579){\color[rgb]{0,0,0}\rotatebox{-33.2687054}{\makebox(0,0)[lb]{\smash{write0}}}}%
+    \put(0.30993838,0.44087737){\color[rgb]{0,0,0}\rotatebox{-33.2687054}{\makebox(0,0)[lb]{\smash{write1}}}}%
+    \put(0.76729961,0.35245722){\color[rgb]{0,0,0}\rotatebox{48.6277765}{\makebox(0,0)[lb]{\smash{ack0}}}}%
+    \put(0.70022065,0.34395985){\color[rgb]{0,0,0}\rotatebox{48.6277765}{\makebox(0,0)[lb]{\smash{ack1}}}}%
+    \put(0.57181777,0.3835666){\color[rgb]{0,0,0}\rotatebox{54.72399654}{\makebox(0,0)[lb]{\smash{nack1}}}}%
+    \put(0.6300255,0.36579656){\color[rgb]{0,0,0}\rotatebox{54.72399654}{\makebox(0,0)[lb]{\smash{nack0}}}}%
+    \put(0.35267931,0.00359993){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{ok0}}}%
+    \put(0.50260578,0.00077955){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{ok1}}}%
+  \end{picture}%
+\endgroup%
