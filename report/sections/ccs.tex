@@ -1,6 +1,6 @@
 \newpage{}\section{Rappresentazione con CCS}
 
-\subsection{Modellazione tramite CCS}
+\subsection{Modellazione tramite CCS}\label{sec:ccs-model}
 
 In prima battuta, è doveroso modellare il protocollo con il CCS(\emph{Calculus
 of Communicating Systems}).
@@ -87,9 +87,40 @@ $ > AckReceiver_1 := ack_1.AckReceiver_{M1} +
 
 $ > AckReceiver_{M1} := \overline{write}_0.ok_1.AckReceiver_0 $
 
+$ $
+
+$ > Sys_{Reliable} =  (Sender | Receiver_0 | AckReceiver_0 | Memory_0) $
+  \textbackslash{} $ \{msg_0,msg_1,read_0,read_1,write_0,write_1,
+                       ack_0,ack_1,nack_0,nack_1\} $
+
+$ $
+
+$ > Sys_{Unreliable} =  (Sender | BadReceiver_0 | AckReceiver_0 | Memory_0) $
+  \textbackslash{} $ \{msg_0,msg_1,read_0,read_1,write_0,write_1,
+                       ack_0,ack_1,nack_0,nack_1\} $
+
 \begin{figure}[H]
   \centering
   \includegraphics[width=.5\columnwidth]{images/ccs.eps}
   \caption{Rappresentazione di ABP tramite CCS}
+  \label{fig:ccs-abp}
+\end{figure}
+
+\subsection{pseuCo}
+
+Il sistema è stato provato anche su \url{pSeuco.com} (script
+\ref{sec:pseuco-script}). 
+
+Sebbene il grafico risultante è piuttosto confusionario, sembra che la
+rappresentazione del sistema in CCS soddisfi le proprietà attese.
+
+Nella parte superiore del grafico vi sono tutte le notifiche da parte di
+\texttt{$AckReceiver_1$} di corretta ricezione, mentre nella parte inferiore
+quelle di \texttt{$AckReceiver_0$}:
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=.8\columnwidth]{images/pseuco.eps}
+  \caption{\emph{LTS} disegnando da pseuCo}
   \label{fig:ccs-abp}
 \end{figure}

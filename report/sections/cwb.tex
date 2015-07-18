@@ -1,0 +1,178 @@
+\newpage{}\section{CWB}
+
+\subsection{Utilizzo del WorkBench}
+
+CWB (\emph{Concurrency WorkBench}) è uno strumento di analisi statica creato
+per scopi accademici al fine di verificare diversi tipi di equivalenze e
+proprietà.
+
+Questo strumento è stato pensato principalmente per sistemi le cui
+implementazioni sono definite con il CCS e forniscono la possibilità di
+verificare delle proprietà espresse per mezzo della HML (\emph{Hennessy-Milner
+Logic}).
+
+Grazie alla successione di comandi presente in sezione \ref{sec:cwb-definition}
+il workbench viene popolato con i sistemi visti in sezione
+\ref{sec:ccs-model}.
+
+Viene definita una specifica \textbf{Spec} tale che riesca a distinguere il
+corretto alternarsi di messaggi con numero di sequenza 0 e 1:
+
+$ > Spec = = ok_0.ok_1.Spec $
+
+Vengono aggiunti anche due nuovi agenti e sistemi, distinguibili dal prefisso
+\textbf{Loud}. In tali sistemi:
+
+\begin{itemize}
+  \item ogni volta che viene inviato un messaggio con numero di sequenza X
+    da un \textbf{Sender}, viene effettuata una comunicazione sul canale
+    \textbf{$send_X$};
+  \item ogni volta che viene ricevuto un messaggio con numero di sequenza X
+    da un \textbf{Receiver} o da un \textbf{BadReceiver}, viene effettuata una
+    comunicazione sul canale \textbf{$receive_X$}.
+\end{itemize}
+
+\subsection{Verifica di proprietà}
+
+A questo punto può essere utile vedere se il nostro sistema soddisfa delle
+proprietà.
+
+Per popolare il workbench e testare le proprietà desiderabili per questo,
+vengono usati comandi estratti dal listato presente in sezione
+\ref{sec:cwb-commands}.
+
+\subsubsection{Presenza di deadlock}
+
+Può essere utile sapere se i sistemi (sia quello affidabile che quello lossy)
+possono andare in deadlock in qualche esecuzione. Dopo l'esecuzione del comando
+\texttt{deadlocks(}$<Sys>$\texttt{)}, il workbench ci informa che non sono
+presenti deadlock.
+
+In questo caso il risultato rispecchia le attese, poichè:
+
+\begin{enumerate}
+  \item già in \textbf{pseuCo} si poteva notare che uno dei due sistemi non
+    soffriva di deadlock;
+  \item il protocollo in sè prevede che i messaggi vengano trasmessi
+    continuamente, senza considerare situazioni in cui uno dei due nodi
+    della rete si spegne o interruzioni di qualsiasi natura.
+\end{enumerate}
+
+\subsubsection{Bisimilarità forte}
+
+Subito dopo essersi accertati dell'assenza di deadlock, è utile conoscere se i
+sistemi individuati hanno un comportamento equivalente a quello della
+specifica \textbf{Spec} ($Sys \sim Spec$).
+
+Come è facile aspettarsi, nessuno dei due sistemi è fortemente bisimile alla
+specifica. Tuttavia questo non stupisce, poichè nei due ABP vengono eseguite
+delle azioni interne che la specifica non è capace di
+eseguire\footnote{infatti con il comando
+\texttt{dfstrong(}$<Sys>$\texttt{,Spec)} il workbench informa che il primo
+``sa compiere'' un'azione interna \texttt{tau}}.
+
+Nemmeno i due sistemi sono fortemente bisimili tra loro: il sistema lossy è
+distinguibile a causa di una sequenza di azioni interne che prevede il rifiuto
+del messaggio inviato. A causa di questo, non è vero che dopo cinque azioni
+interne è sempre possibile vedere la comunicazione \texttt{$ok_0$}.
+
+\subsubsection{Bisimilarità debole}
+
+I due sistemi, però, ci si aspetta che siano debolmente bisimili alla
+specifica poichè come visto prima l'unica differenza tra questi è la presenza
+di azioni interne che permettono il corretto funzionamento del protocollo.
+
+Dopo l'esecuzione dei comandi per tale verifica, il workbench conferma, come
+aspettato, che i due sistemi e la specifica \textbf{Spec} precedentemente
+definita sono debolmente bisimili.
+
+\subsubsection{Proprietà HML}
+
+Vengono verificate, sempre con l'ausilio dello stesso tool, un insieme di
+proprietà per ogni sistema:
+
+\paragraph{ReliableABP} \mbox{}
+
+Per il sistema senza perdita di messaggi vengono provate le seguenti proprietà:
+
+\begin{itemize}
+  \item $Can(tau)$: vero -- il sistema può eseguire un'azione iniziale
+    (interna)
+  \item $Even(<ok_0>T)$: vero -- il sistema esegue sempre $ok_0$ in
+    un'esecuzione completa
+  \item $Even(<ok_1>T)$: vero -- il sistema esegue sempre $ok_1$ in
+    un'esecuzione completa
+  \item $Even([[ok_0]]<ok_1>T) \&{} Even([[ok_1]]<ok_0>T)$: vero -- in
+    un'esecuzione completa, il sistema:
+    \begin{itemize}
+      \item per ogni modo in cui può eseguire $ok_0$, poi può eseguire $ok_1$;
+      \item per ogni modo in cui può eseguire $ok_1$, poi può eseguire $ok_0$.
+    \end{itemize}
+  \item $Fair$: vero -- è invariante che in qualsiasi modo venga eseguito $ok$
+    per un certo messaggio di sequenza, poi verrà eseguito quello per il
+    messaggio con il numero di sequenza successivo;
+  \item $Pos(<ok_0><ok_0>T | <ok_1><ok_1>T)$ falso -- viene testato che il
+    \textbf{Receiver} non possa ricevere due messaggi consecutivi con lo stesso
+    numero di sequenza;
+  \item $NoConsecutiveSameNumber$ vero -- questa proprietà è la proprietà
+    precedente negata;
+  \item $Livelock$ falso -- non sono presenti Livelock nel presente, dal
+    momento che non sono previsti \texttt{NACK} in questa implementazione.
+\end{itemize}
+
+\paragraph{UnreliableABP} \mbox{}
+
+Per il sistema lossy vengono provate le seguenti proprietà:
+
+\begin{itemize}
+  \item $Even(<ok_0>T)$ falso -- non è vero che in tutte le computazioni
+    complete venga ricevuto il messaggio con numero di sequenza 0, siccome il
+    sistema potrebbe rimanere in ciclo infinito. \\
+    In pratica, non vale la \emph{fair abstraction from divergence};
+  \item $Even(<ok_1>T)$ falso -- non è vero che in tutte le computazioni
+    complete venga ricevuto il messaggio con numero di sequenza 1, siccome il
+    sistema potrebbe rimanere in ciclo infinito. \\
+    In pratica, non vale la \emph{fair abstraction from divergence};
+  \item $Fair$: vero -- è invariante che in qualsiasi modo venga eseguito $ok$
+    per un certo messaggio di sequenza, poi verrà eseguito quello per il
+    messaggio con il numero di sequenza successivo;
+  \item $NoConsecutiveSameNumber$ vero -- il \textbf{BadReceiver} ignora i
+    messaggi aventi numeri di sequenza uguali a quello ricevuto correttamente;
+  \item $Livelock$ vero -- il \textbf{BadReceiver} potrebbe continuare aventi
+    rifiutare un certo messaggio scegliendo di inviare sempre dei \texttt{NACK}
+    all'\textbf{AckReceiver}.
+\end{itemize}
+
+\paragraph{LoudReliableABP} \mbox{}
+
+Per l'implementazione estesa del protocollo con canale affidabile vengono
+provate:
+
+\begin{itemize}
+  \item $LoudOk_0$ vero -- Ogniqualvolta un sistema manda un messaggio con
+    numero di sequenza 0 (e dunque verrà effettuata una comunicazione sul
+    canale $send_0$), questo verrà ricevuto (verrà effettuata una
+    comunicazione sul canale $receive_0$);
+  \item $LoudOk_1$ vero -- Ogniqualvolta un sistema manda un messaggio con
+    numero di sequenza 1 (e dunque verrà effettuata una comunicazione sul
+    canale $send_1$), questo verrà ricevuto (verrà effettuata una
+    comunicazione sul canale $receive_1$);
+  \item $LoudOk$ vero -- vero poichè entrambe le proprietà sopra descritte
+    sono vere.
+\end{itemize}
+
+\paragraph{LoudUnreliableABP} \mbox{}
+
+Per l'implementazione estesa del protocollo con canale affidabile vengono
+provate:
+
+\begin{itemize}
+  \item $LoudOk_0$ falso -- Ogniqualvolta un sistema manda un messaggio con
+    numero di sequenza 0 (e dunque verrà effettuata una comunicazione sul
+    canale $send_0$), il canale ricevente potrebbe non accettarlo mai;
+  \item $LoudOk_1$ falso -- Ogniqualvolta un sistema manda un messaggio con
+    numero di sequenza 1 (e dunque verrà effettuata una comunicazione sul
+    canale $send_1$), il canale ricevente potrebbe non accettarlo mai;
+  \item $LoudOk$ falso -- falso poichè entrambe le proprietà sopra descritte
+    sono false.
+\end{itemize}

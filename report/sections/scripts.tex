@@ -1,9 +1,513 @@
 \section{Programs}\label{sec:prog}
 
+\subsection{pseuCo}\label{sec:pseuco-script}
+\begin{verbatim}
+Sender := read0?.(msg0!.Sender + read1?.Sender) + read1?.(msg1!.Sender + read0?.Sender)
+BadReceiver := msg0?.(ack0!.BadReceiver + nack0!.BadReceiver) + msg1?.(ack1!.BadReceiver + nack1!.BadReceiver)
+
+AckReceiver0 := ack0?.AckReceiverM0 + nack0?.AckReceiver0 + ack1?.AckReceiver0
+AckReceiverM0 := write1!.ok0!.AckReceiver1
+AckReceiver1 := ack1?.AckReceiverM1 + nack1?.AckReceiver1 + ack0?.AckReceiver1
+AckReceiverM1 := write0!.ok1!.AckReceiver0
+
+Memory0 := read0!.Memory0 + write1?.Memory1
+Memory1 := read1!.Memory1 + write0?.Memory0
+
+(Sender | BadReceiver | AckReceiver0 | Memory0) \ {msg0,msg1,ack0,ack1,nack0,nack1,read0,read1,write0,write1}
+\end{verbatim}
+
+\subsection{abp.cwb}\label{sec:cwb-definition}
+\begin{verbatim}
+*******************************************************************************
+* Definition of the specification "Spec"
+agent Spec = ok0.ok1.Spec;
+*******************************************************************************
+
+
+
+*******************************************************************************
+* Definition of Sender
+agent Sender = read0.('msg0.Sender + read1.Sender) + read1.('msg1.Sender + read0.Sender);
+*******************************************************************************
+
+*******************************************************************************
+* Definition of ReceiverX
+agent Receiver0 = msg0.'ack0.Receiver1;
+agent Receiver1 =  msg1.'ack1.Receiver0;
+*******************************************************************************
+
+*******************************************************************************
+* Definition of BadReceiverX
+agent BadReceiver0 = msg0.('ack0.BadReceiver1 + 'nack0.BadReceiver0);
+agent BadReceiver1 = msg1.('ack1.BadReceiver0 + 'nack1.BadReceiver1);
+*******************************************************************************
+
+*******************************************************************************
+* Definition of AckReceiveX/MX
+agent AckReceive0 = ack0.AckReceiveM0 + nack0.AckReceive0 + ack1.AckReceive0;
+agent AckReceiveM0 = 'write1.ok0.AckReceive1;
+agent AckReceive1 = ack1.AckReceiveM1 + nack1.AckReceive1 + ack0.AckReceive1;
+agent AckReceiveM1 = 'write0.ok1.AckReceive0;
+*******************************************************************************
+
+*******************************************************************************
+* Definition of MemoryX
+agent Memory0 = 'read0.Memory0 + write1.Memory1;
+agent Memory1 = 'read1.Memory1 + write0.Memory0;
+*******************************************************************************
+
+
+
+*******************************************************************************
+* InternalActions
+set IntActions = {read0,read1,write0,write1,ack0,ack1,nack0,nack1,msg0,msg1};
+*******************************************************************************
+
+
+
+*******************************************************************************
+* The definition of the safe implementation "ReliableABP"
+agent ReliableABP = (Sender | Receiver0 | AckReceive0 | Memory0)\IntActions;
+*******************************************************************************
+
+*******************************************************************************
+* The definition of the lossy implementation "UnreliableABP"
+agent UnreliableABP = (Sender | BadReceiver0 | AckReceive0 | Memory0)\IntActions;
+*******************************************************************************
+
+
+
+*******************************************************************************
+* The definition of the "Can" temporal operator
+prop Can(a) = <a>T;
+*******************************************************************************
+
+*******************************************************************************
+* The definition of the "Inv" temporal operator
+prop Inv(P) = max(X.(P | [-]X));
+*******************************************************************************
+
+*******************************************************************************
+* The definition of the "Pos" temporal operator
+prop Pos(P) = min(X.(P | <->X));
+*******************************************************************************
+
+*******************************************************************************
+* The definition of the "Safe" temporal operator
+prop Safe(P) = max(X.(P & (<->X | [-]F) ));
+*******************************************************************************
+
+*******************************************************************************
+* The definition of the "Even" temporal operator
+prop Even(P) = min(X.(P | ([-]X & <->T) ));
+*******************************************************************************
+
+*******************************************************************************
+* The definition of the "TauCycle" temporal operator
+prop TauCycle = max(X.(<tau>X));
+*******************************************************************************
+
+*******************************************************************************
+* The definition of the "Livelock" temporal operator
+prop Livelock = Pos(TauCycle);
+*******************************************************************************
+
+*******************************************************************************
+* The definition of the "Fair" temporal operator
+prop Fair = Inv([[ok0]]<ok1>T & [[ok1]]<ok0>T);
+*******************************************************************************
+
+
+
+*******************************************************************************
+* Definition of LoudSender
+agent LoudSender = read0.send0.('msg0.LoudSender + read1.LoudSender) + read1.send1.('msg1.LoudSender + read0.LoudSender);
+*******************************************************************************
+
+*******************************************************************************
+* Definition of LoudReceiverX
+agent LoudReceiver0 = msg0.'ack0.receive0.LoudReceiver1;
+agent LoudReceiver1 =  msg1.receive1.'ack1.LoudReceiver0;
+*******************************************************************************
+
+*******************************************************************************
+* Definition of LoudBadReceiverX
+agent LoudBadReceiver0 = msg0.('ack0.receive0.LoudBadReceiver1 + 'nack0.LoudBadReceiver0);
+agent LoudBadReceiver1 = msg1.('ack1.receive1.LoudBadReceiver0 + 'nack1.LoudBadReceiver1);
+*******************************************************************************
+
+*******************************************************************************
+* The definition of the safe implementation "LoudReliableABP"
+agent LoudReliableABP = (LoudSender | LoudReceiver0 | AckReceive0 | Memory0)\IntActions;
+*******************************************************************************
+
+*******************************************************************************
+* The definition of the lossy implementation "LoudUnreliableABP"
+agent LoudUnreliableABP = (LoudSender | LoudBadReceiver0 | AckReceive0 | Memory0)\IntActions;
+*******************************************************************************
+
+*******************************************************************************
+* The definition of the "NoConsecutiveSameNumber" temporal operator
+prop NoConsecutiveSameNumber = Inv([[ok0]][[ok0]]F & [[ok1]][[ok1]]F);
+*******************************************************************************
+
+*******************************************************************************
+* The definition of the "NoConsecutiveSameNumber" temporal operator
+prop LoudOk0 = [[send0]]Even(<receive0>T);
+*******************************************************************************
+
+*******************************************************************************
+* The definition of the "NoConsecutiveSameNumber" temporal operator
+prop LoudOk1 = [[send1]]Even(<receive1>T);
+*******************************************************************************
+
+*******************************************************************************
+* The definition of the "NoConsecutiveSameNumber" temporal operator
+prop LoudOk = LoudOk0 & LoudOk1;
+*******************************************************************************
+\end{verbatim}
+
+\subsection{commands.cwb}\label{sec:cwb-commands}
+\begin{verbatim}
+input "github/Alternating-bit-protocol/abp.cwb";
+
+*******************************************************************************
+
+deadlocks(ReliableABP);
+deadlocks(UnreliableABP);
+
+*******************************************************************************
+
+game(Spec,ReliableABP);
+
+*******************************************************************************
+
+strongeq(Spec,ReliableABP);
+dfstrong(Spec,ReliableABP);
+dfstrong(ReliableABP,Spec);
+
+strongeq(Spec,UnreliableABP);
+dfstrong(Spec,UnreliableABP);
+
+strongeq(ReliableABP,UnreliableABP);
+dfstrong(ReliableABP,UnreliableABP);
+
+*******************************************************************************
+
+dfweak(Spec,ReliableABP);
+dfweak(Spec,UnreliableABP);
+dfweak(ReliableABP,UnreliableABP);
+
+*******************************************************************************
+
+cp (ReliableABP, Can(tau));
+checkprop (ReliableABP, Even(<ok0>T));
+checkprop (ReliableABP, Even(<ok1>T));
+checkprop (ReliableABP, Even([[ok0]]<ok1>T) & Even([[ok1]]<ok0>T));
+checkprop (ReliableABP, Fair);
+checkprop (ReliableABP, NoConsecutiveSameNumber);
+checkprop (ReliableABP, Livelock);
+
+checkprop (UnreliableABP, Fair);
+checkprop (UnreliableABP, NoConsecutiveSameNumber);
+checkprop (UnreliableABP, Livelock);
+
+checkprop (LoudReliableABP, LoudOk0);
+checkprop (LoudReliableABP, LoudOk1);
+checkprop (LoudReliableABP, LoudOk);
+
+checkprop (LoudUnreliableABP, LoudOk0);
+checkprop (LoudUnreliableABP, LoudOk1);
+checkprop (LoudUnreliableABP, LoudOk);
+\end{verbatim}
+
 \subsection{abp.go}\label{sec:abp-prog}
 \begin{verbatim}
+package main
+
+import (
+  "fmt"
+)
+
+
+
+// Fork type
+type Message struct {
+  content string      //  message content
+}
+
+// Memory
+type Memory struct {
+  // (public) channels
+  Write0 chan int // channel used to change memory status
+  Write1 chan int // channel used to change memory status
+  Read0 chan int // channel used to read memory status
+  Read1 chan int // channel used to read memory status
+}
+
+func (self *Memory) Run () {
+  var state = 0
+
+  for {
+    if state == 0 {
+      select {
+        case <- self.Write1:
+          state = 1
+        case self.Read0 <- 0:
+      }
+    } else {
+      select {
+        case <- self.Write0:
+          state = 0
+        case self.Read1 <- 1:
+      }
+    }
+  }
+}
+
+// Sender
+func sender(send0 chan *Message, send1 chan *Message, mem *Memory) {
+  var msg Message
+  for {
+    select {
+      case <- mem.Read0:
+        msg.content = "Hello"
+        select {
+          case send0 <- &msg:
+          case <- mem.Read1:
+        }
+      case <- mem.Read1:
+        msg.content = "Tim"
+        select {
+          case send1 <- &msg:
+          case <- mem.Read0:
+        }
+    }
+  }
+}
+
+// Receiver
+func receiver(receive0 chan *Message, receive1 chan *Message,
+              ack0 chan bool, ack1 chan bool) {
+  var msg *Message
+  var expectFrom = 0
+
+  for {
+    if expectFrom == 0 {
+      msg = <- receive0
+      fmt.Println(msg.content)
+      ack0 <- true
+      expectFrom = 1
+    } else {
+      msg = <- receive1
+      fmt.Println(msg.content)
+      ack1 <- true
+      expectFrom = 0
+    }
+  }
+}
+
+// AckReceiver
+func acknack(ack0 chan bool, ack1 chan bool,
+             mem *Memory) {
+  var seq = 0
+
+  for {
+    if seq == 0 {
+      select {
+        case ok := <- ack0:
+          if ok {
+            mem.Write1 <- 1
+            _,_ = fmt.Println("OK0");
+            seq = 1
+          }
+        case <- ack1:
+      }
+    } else {
+      select {
+        case ok := <- ack1:
+          if ok {
+            mem.Write0 <- 0
+            _,_ = fmt.Println("OK1");
+            seq = 0
+          }
+        case <- ack0:
+      }
+    }
+  }
+}
+
+// main
+func main () {
+  fmt.Printf("Hello World\n")
+  for i := 0; i < 5; i++ {
+    var v int
+    fmt.Printf("%d ", v)
+    v = 5
+  }
+  fmt.Printf("\n")
+
+  var mem = Memory {make(chan int), make(chan int),
+                    make(chan int), make(chan int)}
+  go mem.Run()
+
+  var msgChan0 = make(chan *Message)
+  var msgChan1 = make(chan *Message)
+  var ackChan0 = make(chan bool)
+  var ackChan1 = make(chan bool)
+
+  go sender(msgChan0, msgChan1, &mem)
+  go receiver(msgChan0, msgChan1, ackChan0, ackChan1)
+  acknack(ackChan0, ackChan1, &mem)
+}
 \end{verbatim}
 
 \subsection{abp\_bad.go}\label{sec:bad-abp-prog}
 \begin{verbatim}
+package main
+
+import (
+  "fmt"
+)
+
+
+
+// Fork type
+type Message struct {
+  content string      //  message content
+}
+
+// Memory
+type Memory struct {
+  // (public) channels
+  Write0 chan int // channel used to change memory status
+  Write1 chan int // channel used to change memory status
+  Read0 chan int // channel used to read memory status
+  Read1 chan int // channel used to read memory status
+}
+
+func (self *Memory) Run () {
+  var state = 0
+
+  for {
+    if state == 0 {
+      select {
+        case <- self.Write1:
+          state = 1
+        case self.Read0 <- 0:
+      }
+    } else {
+      select {
+        case <- self.Write0:
+          state = 0
+        case self.Read1 <- 1:
+      }
+    }
+  }
+}
+
+// Sender
+func sender(send0 chan *Message, send1 chan *Message, mem *Memory) {
+  var msg Message
+  for {
+    select {
+      case <- mem.Read0:
+        msg.content = "Hello"
+        select {
+          case send0 <- &msg:
+          case <- mem.Read1:
+        }
+      case <- mem.Read1:
+        msg.content = "Tim"
+        select {
+          case send1 <- &msg:
+          case <- mem.Read0:
+        }
+    }
+  }
+}
+
+// Receiver
+func receiver(receive0 chan *Message, receive1 chan *Message,
+              ack0 chan bool, ack1 chan bool) {
+  var msg *Message
+  var expectFrom = 0
+
+  for {
+    if expectFrom == 0 {
+      msg = <- receive0
+      select {
+        case ack0 <- true:
+          fmt.Println(msg.content)
+          expectFrom = 1
+        case ack0 <- false:
+          _,_ = fmt.Println("NACK0");
+      }
+      
+    } else {
+      msg = <- receive1
+      select {
+        case ack1 <- true:
+          fmt.Println(msg.content)
+          expectFrom = 0
+        case ack1 <- false:
+          _,_ = fmt.Println("NACK1");
+      }
+    }
+  }
+}
+
+// AckReceiver
+func acknack(ack0 chan bool, ack1 chan bool,
+             mem *Memory) {
+  var seq = 0
+
+  for {
+    if seq == 0 {
+      select {
+        case ok := <- ack0:
+          if ok {
+            mem.Write1 <- 1
+            _,_ = fmt.Println("OK0");
+            seq = 1
+          }
+        case <- ack1:
+      }
+    } else {
+      select {
+        case ok := <- ack1:
+          if ok {
+            mem.Write0 <- 0
+            _,_ = fmt.Println("OK1");
+            seq = 0
+          }
+        case <- ack0:
+      }
+    }
+  }
+}
+
+// main
+func main () {
+  fmt.Printf("Hello World\n")
+  for i := 0; i < 5; i++ {
+    var v int
+    fmt.Printf("%d ", v)
+    v = 5
+  }
+  fmt.Printf("\n")
+
+  var mem = Memory {make(chan int), make(chan int),
+                    make(chan int), make(chan int)}
+  go mem.Run()
+
+  var msgChan0 = make(chan *Message)
+  var msgChan1 = make(chan *Message)
+  var ackChan0 = make(chan bool)
+  var ackChan1 = make(chan bool)
+
+  go sender(msgChan0, msgChan1, &mem)
+  go receiver(msgChan0, msgChan1, ackChan0, ackChan1)
+  acknack(ackChan0, ackChan1, &mem)
+}
 \end{verbatim}

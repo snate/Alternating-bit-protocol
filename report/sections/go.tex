@@ -1,0 +1,31 @@
+\newpage{}\section{Go}
+
+\subsection{Perchè Go}\label{sec:why-do-we-go}
+
+Google Go è un linguaggio di programmazione che basa i suoi principi sulla
+gestione della concorrenza tramite comunicazione, mentre gran parte degli
+altri linguaggi di programmazione utilizzano un approccio più vulnerabile,
+condividendo memoria.
+
+Condividendo canali di comunicazione, invece, è possibile realizzare programmi
+robusti che riescano a soddisfare le stesse proprietà provate teoricamente con
+strumenti come il CWB.
+
+\subsection{Implementazione}
+
+Il programma è stato implementato con le due versioni viste in precedenza,
+ovvero quella che simula un canale affidabile (sez. \ref{sec:abp-prog}) e
+quella che simula un canale con perdite (sez. \ref{sec:bad-abp-prog}).
+
+I due programmi sono stati scritti tenendo conto che, come detto nella sezione
+\ref{sec:why-do-we-go}, il paradigma pensato dai creatori di questo linguaggio
+consisteva nel gestire la concorrenza tramite comunicazione e non condivisione
+di memoria.
+
+Questo ha permesso di riutilizzare gli script usati per definire gli agenti
+usati nel CWB e trasformarli in pochissimo tempo in programmi equivalenti in
+Go.
+
+Ciascun agente è stato trasformato in una \emph{goroutine} e lanciate nel
+metodo main, così come i canali condivisi vengono istanziati nel main e
+passati esclusivamente a chi comunica su quei canali.

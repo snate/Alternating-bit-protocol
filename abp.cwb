@@ -89,7 +89,7 @@ prop TauCycle = max(X.(<tau>X));
 
 *******************************************************************************
 * The definition of the "Livelock" temporal operator
-prop Livelock(P) = Pos(TauCycle);
+prop Livelock = Pos(TauCycle);
 *******************************************************************************
 
 *******************************************************************************
@@ -101,19 +101,13 @@ prop Fair = Inv([[ok0]]<ok1>T & [[ok1]]<ok0>T);
 
 *******************************************************************************
 * Definition of LoudSender
-agent LoudSender = read0.('msg0.send0.LoudSender + read1.LoudSender) + read1.('msg1.send1.LoudSender + read0.LoudSender);
+agent LoudSender = read0.send0.('msg0.LoudSender + read1.LoudSender) + read1.send1.('msg1.LoudSender + read0.LoudSender);
 *******************************************************************************
 
 *******************************************************************************
 * Definition of LoudReceiverX
 agent LoudReceiver0 = msg0.'ack0.receive0.LoudReceiver1;
 agent LoudReceiver1 =  msg1.receive1.'ack1.LoudReceiver0;
-*******************************************************************************
-
-*******************************************************************************
-* Definition of BadReceiverX
-agent BadReceiver0 = msg0.('ack0.BadReceiver1 + 'nack0.BadReceiver0);
-agent BadReceiver1 = msg1.('ack1.BadReceiver0 + 'nack1.BadReceiver1);
 *******************************************************************************
 
 *******************************************************************************
@@ -135,4 +129,19 @@ agent LoudUnreliableABP = (LoudSender | LoudBadReceiver0 | AckReceive0 | Memory0
 *******************************************************************************
 * The definition of the "NoConsecutiveSameNumber" temporal operator
 prop NoConsecutiveSameNumber = Inv([[ok0]][[ok0]]F & [[ok1]][[ok1]]F);
+*******************************************************************************
+
+*******************************************************************************
+* The definition of the "NoConsecutiveSameNumber" temporal operator
+prop LoudOk0 = [[send0]]Even(<receive0>T);
+*******************************************************************************
+
+*******************************************************************************
+* The definition of the "NoConsecutiveSameNumber" temporal operator
+prop LoudOk1 = [[send1]]Even(<receive1>T);
+*******************************************************************************
+
+*******************************************************************************
+* The definition of the "NoConsecutiveSameNumber" temporal operator
+prop LoudOk = [[send0]]Even(<receive0>T) & [[send1]]Even(<receive1>T);
 *******************************************************************************

@@ -29,25 +29,22 @@ dfweak(ReliableABP,UnreliableABP);
 
 *******************************************************************************
 
-cp (Spec, (Can(ok0)));
-
 cp (ReliableABP, Can(tau));
 checkprop (ReliableABP, Even(<ok0>T));
 checkprop (ReliableABP, Even(<ok1>T));
 checkprop (ReliableABP, Even([[ok0]]<ok1>T) & Even([[ok1]]<ok0>T));
 checkprop (ReliableABP, Fair);
 checkprop (ReliableABP, NoConsecutiveSameNumber);
-checkprop (ReliableABP, TauCycle);
+checkprop (ReliableABP, Livelock);
 
 checkprop (UnreliableABP, Fair);
 checkprop (UnreliableABP, NoConsecutiveSameNumber);
-checkprop (UnreliableABP, TauCycle);
+checkprop (UnreliableABP, Livelock);
 
-cp (LoudReliableABP, Even(<ok0>T));
-checkprop (LoudReliableABP, Fair);
-checkprop (LoudReliableABP, NoConsecutiveSameNumber);
-checkprop (LoudReliableABP, TauCycle);
+checkprop (LoudReliableABP, LoudOk0);
+checkprop (LoudReliableABP, LoudOk1);
+checkprop (LoudReliableABP, LoudOk);
 
-checkprop (LoudUnreliableABP, Fair);
-checkprop (LoudUnreliableABP, NoConsecutiveSameNumber);
-checkprop (LoudUnreliableABP, TauCycle);
+checkprop (LoudUnreliableABP, LoudOk0);
+checkprop (LoudUnreliableABP, LoudOk1);
+checkprop (LoudUnreliableABP, LoudOk);

@@ -1,12 +1,12 @@
-A := read0?.msg0!.A + read1?.msg1!.A
-B := msg0?.(ack0!.B + nack0!.B) + msg1?.(ack1!.B + nack1!.B)
+Sender := read0?.(msg0!.Sender + read1?.Sender) + read1?.(msg1!.Sender + read0?.Sender)
+BadReceiver := msg0?.(ack0!.BadReceiver + nack0!.BadReceiver) + msg1?.(ack1!.BadReceiver + nack1!.BadReceiver)
 
-C0 := ack0?.CA0 + nack0?.C0 + ack1?.C0
-CA0 := write1!.ok0!.C1
-C1 := ack1?.CA1 + nack1?.C1 + ack0?.C1
-CA1 := write0!.ok1!.C0
+AckReceiver0 := ack0?.AckReceiverM0 + nack0?.AckReceiver0 + ack1?.AckReceiver0
+AckReceiverM0 := write1!.ok0!.AckReceiver1
+AckReceiver1 := ack1?.AckReceiverM1 + nack1?.AckReceiver1 + ack0?.AckReceiver1
+AckReceiverM1 := write0!.ok1!.AckReceiver0
 
-M0 := read0!.M0 + write1?.M1
-M1 := read1!.M1 + write0?.M0
+Memory0 := read0!.Memory0 + write1?.Memory1
+Memory1 := read1!.Memory1 + write0?.Memory0
 
-(A | B | C0 | M0) \ {msg0,msg1,ack0,ack1,nack0,nack1,read0,read1,write0,write1}
+(Sender | BadReceiver | AckReceiver0 | Memory0) \ {msg0,msg1,ack0,ack1,nack0,nack1,read0,read1,write0,write1}
