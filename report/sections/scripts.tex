@@ -1,7 +1,7 @@
 \section{Programs}\label{sec:prog}
 
 \subsection{pseuCo}\label{sec:pseuco-script}
-\begin{verbatim}
+\begin{lstlisting}[breaklines]
 Sender := read0?.(msg0!.Sender + read1?.Sender) + read1?.(msg1!.Sender + read0?.Sender)
 BadReceiver := msg0?.(ack0!.BadReceiver + nack0!.BadReceiver) + msg1?.(ack1!.BadReceiver + nack1!.BadReceiver)
 
@@ -14,10 +14,10 @@ Memory0 := read0!.Memory0 + write1?.Memory1
 Memory1 := read1!.Memory1 + write0?.Memory0
 
 (Sender | BadReceiver | AckReceiver0 | Memory0) \ {msg0,msg1,ack0,ack1,nack0,nack1,read0,read1,write0,write1}
-\end{verbatim}
+\end{lstlisting}
 
 \subsection{abp.cwb}\label{sec:cwb-definition}
-\begin{verbatim}
+\begin{lstlisting}[breaklines]
 *******************************************************************************
 * Definition of the specification "Spec"
 agent Spec = ok0.ok1.Spec;
@@ -165,10 +165,10 @@ prop LoudOk1 = [[send1]]Even(<receive1>T);
 * The definition of the "NoConsecutiveSameNumber" temporal operator
 prop LoudOk = LoudOk0 & LoudOk1;
 *******************************************************************************
-\end{verbatim}
+\end{lstlisting}
 
 \subsection{commands.cwb}\label{sec:cwb-commands}
-\begin{verbatim}
+\begin{lstlisting}[breaklines]
 input "github/Alternating-bit-protocol/abp.cwb";
 
 *******************************************************************************
@@ -191,6 +191,11 @@ dfstrong(Spec,UnreliableABP);
 
 strongeq(ReliableABP,UnreliableABP);
 dfstrong(ReliableABP,UnreliableABP);
+
+*******************************************************************************
+
+pre(ReliableABP,Spec);
+pre(UnreliableABP,Spec);
 
 *******************************************************************************
 
@@ -219,10 +224,10 @@ checkprop (LoudReliableABP, LoudOk);
 checkprop (LoudUnreliableABP, LoudOk0);
 checkprop (LoudUnreliableABP, LoudOk1);
 checkprop (LoudUnreliableABP, LoudOk);
-\end{verbatim}
+\end{lstlisting}
 
 \subsection{abp.go}\label{sec:abp-prog}
-\begin{verbatim}
+\begin{lstlisting}[breaklines]
 package main
 
 import (
@@ -360,10 +365,10 @@ func main () {
   go receiver(msgChan0, msgChan1, ackChan0, ackChan1)
   acknack(ackChan0, ackChan1, &mem)
 }
-\end{verbatim}
+\end{lstlisting}
 
 \subsection{abp\_bad.go}\label{sec:bad-abp-prog}
-\begin{verbatim}
+\begin{lstlisting}[breaklines]
 package main
 
 import (
@@ -510,4 +515,4 @@ func main () {
   go receiver(msgChan0, msgChan1, ackChan0, ackChan1)
   acknack(ackChan0, ackChan1, &mem)
 }
-\end{verbatim}
+\end{lstlisting}
