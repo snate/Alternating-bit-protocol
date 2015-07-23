@@ -76,6 +76,15 @@ distinguibile a causa di una sequenza di azioni interne che prevede il rifiuto
 del messaggio inviato. A causa di questo, non è vero che dopo cinque azioni
 interne è sempre possibile vedere la comunicazione \texttt{$ok_0$}.
 
+\subsubsection{Preordine}
+
+Ci si aspetta che le due implementazioni del protocollo sappiano simulare la
+specifica: si testa perciò se esiste un preordine tra questi e \textbf{Spec}
+con il comando \texttt{pre} in CWB.
+
+Il risultato conferma le nostre ipotesi, confermando quindi l'esistenza di un
+preordine nell'equivalenza comportamentale tra i due sistemi e la specifica.
+
 \subsubsection{Bisimilarità debole}
 
 I due sistemi, però, ci si aspetta che siano debolmente bisimili alla
