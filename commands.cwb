@@ -23,6 +23,11 @@ dfstrong(ReliableABP,UnreliableABP);
 
 *******************************************************************************
 
+pre(ReliableABP,Spec);
+pre(UnreliableABP,Spec);
+
+*******************************************************************************
+
 dfweak(Spec,ReliableABP);
 dfweak(Spec,UnreliableABP);
 dfweak(ReliableABP,UnreliableABP);
